@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { MessageCircle, Users, Image, Clock, MoreHorizontal } from 'lucide-react';
-import { MOCK_CHART_DATA, MOCK_KPI_DATA, MOCK_USERS } from '../data/mockData';
+import { MoreHorizontal, Calendar, Filter } from 'lucide-react';
+import { MOCK_CHART_DATA, MOCK_KPI_DATA } from '../data/mockData';
 
 const CenterStage = ({ users, selectedUserId, onSelectUser }) => {
   return (
@@ -26,7 +26,7 @@ const CenterStage = ({ users, selectedUserId, onSelectUser }) => {
       </div>
 
       {/* Main Chart */}
-      <div className="flex-shrink-0 px-6 pb-6 h-64">
+      <div className="flex-shrink-0 px-6 pb-4 h-64">
         <div className="bg-slate-800 p-4 rounded-lg border border-slate-700 h-full w-full">
           <h3 className="text-sm font-semibold text-slate-400 mb-4">Message Activity Volume</h3>
           <div className="h-[calc(100%-2rem)] w-full">
@@ -57,6 +57,36 @@ const CenterStage = ({ users, selectedUserId, onSelectUser }) => {
         </div>
       </div>
 
+      {/* Filter Bar */}
+      <div className="px-6 pb-4">
+        <div className="bg-slate-800/50 p-3 rounded-lg border border-slate-700 flex items-center gap-4">
+          <div className="flex items-center gap-2 flex-1">
+             <div className="relative flex-1 max-w-xs">
+               <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+               <input
+                 type="text"
+                 placeholder="Oct 20, 2023 - Oct 27, 2023"
+                 className="w-full bg-slate-900 text-sm text-slate-200 pl-10 pr-4 py-2 rounded-md border border-slate-700 focus:outline-none focus:border-blue-500"
+               />
+             </div>
+             <div className="relative flex-1 max-w-xs">
+               <select className="w-full bg-slate-900 text-sm text-slate-200 pl-4 pr-10 py-2 rounded-md border border-slate-700 focus:outline-none focus:border-blue-500 appearance-none">
+                 <option>Session: 2023-10-27 (Desktop)</option>
+                 <option>Session: 2023-10-26 (Mobile)</option>
+                 <option>All Sessions</option>
+               </select>
+               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                 <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+               </div>
+             </div>
+          </div>
+          <button className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-medium rounded-md transition-colors shadow-sm">
+            <Filter className="w-4 h-4 mr-2" />
+            Apply Filters
+          </button>
+        </div>
+      </div>
+
       {/* Bottom Split Section */}
       <div className="flex-1 px-6 pb-6 min-h-0 overflow-hidden">
         <div className="grid grid-cols-3 gap-6 h-full">
@@ -72,9 +102,10 @@ const CenterStage = ({ users, selectedUserId, onSelectUser }) => {
                 <thead className="bg-slate-900/50 text-slate-400 text-xs uppercase sticky top-0 z-10">
                   <tr>
                     <th className="px-4 py-3 font-medium">User</th>
-                    <th className="px-4 py-3 font-medium">Role</th>
-                    <th className="px-4 py-3 font-medium">Activity Score</th>
-                    <th className="px-4 py-3 font-medium">Sentiment</th>
+                    <th className="px-4 py-3 font-medium text-right">Msgs</th>
+                    <th className="px-4 py-3 font-medium text-right">Words</th>
+                    <th className="px-4 py-3 font-medium w-1/4">% Msgs</th>
+                    <th className="px-4 py-3 font-medium text-right">% Words</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-700">
@@ -92,27 +123,20 @@ const CenterStage = ({ users, selectedUserId, onSelectUser }) => {
                           </span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-slate-400 text-sm">{user.role}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-4 py-3 text-sm text-slate-300 text-right font-mono">{user.msgs.toLocaleString()}</td>
+                      <td className="px-4 py-3 text-sm text-slate-300 text-right font-mono">{user.words.toLocaleString()}</td>
+                      <td className="px-4 py-3 align-middle">
                         <div className="flex items-center">
-                          <div className="w-24 h-1.5 bg-slate-700 rounded-full mr-2 overflow-hidden">
+                          <div className="flex-1 h-1.5 bg-slate-700 rounded-full mr-3 overflow-hidden">
                             <div
                               className="h-full bg-blue-500 rounded-full"
-                              style={{ width: `${user.activity}%` }}
+                              style={{ width: `${user.percentageMsgs}%` }}
                             ></div>
                           </div>
-                          <span className="text-xs text-slate-400">{user.activity}%</span>
+                          <span className="text-xs text-slate-400 w-8 text-right">{user.percentageMsgs}%</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3">
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          user.sentiment === 'Positive' ? 'bg-emerald-900/50 text-emerald-400' :
-                          user.sentiment === 'Negative' ? 'bg-rose-900/50 text-rose-400' :
-                          'bg-slate-700 text-slate-300'
-                        }`}>
-                          {user.sentiment}
-                        </span>
-                      </td>
+                      <td className="px-4 py-3 text-sm text-slate-300 text-right">{user.percentageWords}%</td>
                     </tr>
                   ))}
                 </tbody>
