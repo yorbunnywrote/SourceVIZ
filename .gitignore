@@ -1,4 +1,20 @@
-# Visual Studio
+# Java & Maven
+target/
+bin/
+*.class
+*.jar
+*.war
+*.ear
+sources.txt
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+*.ipr
+*.iws
+
+# Visual Studio & C++
 .vs/
 *.vcxproj.user
 *.opendb
@@ -24,4 +40,8 @@ x64/
 *.dll
 *.ilk
 *.tmp
+
+# Output & Reports
 output/
+test-output/
+*.svg
